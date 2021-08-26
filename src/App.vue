@@ -1,7 +1,7 @@
 <template>
   <!-- <main id="app"> -->
     <app-header :title="title" :score="score"></app-header>
-    <app-field :characters="characters" :playing="palying" :play="play"></app-field>
+    <app-field :characters="characters" :playing="palying"></app-field>
     <app-footer></app-footer>
   <!-- </main> -->
 </template>
@@ -22,16 +22,7 @@ export default {
     }
   },
   methods:{
-    play(character1, character2 ){
-      switch(character1){
-        case 'rock':
-          return character2=="scissors"?"Win": "Loss"
-        case 'paper':
-          return character2=="rock"?"Win": "Loss"
-        case 'scissors':
-          return character2=="paper"?"Win": "Loss"
-      }
-    }
+    
   },
   components: {
     appHeader,

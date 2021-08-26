@@ -1,34 +1,36 @@
 <template>
-<template v-if="userChoice">
-    <div class="playing-title">
-            <h3>You Picked</h3>
-            <h3>The house picked</h3>
-    </div>
-    <section id="field">
-            <character :cname="userChoice" additional="half"></character>
-
-            <character :cname="computerChoice" additional="half" v-if="computerChoice"></character>
-            <null-character  v-else></null-character>
-        
-    </section>
-</template>
-<section v-else id="field" :class="`${this.characters.length==3?'bg-triangle': this.characters.length==5?'bg-pentagon': 'monomode'}`">
-    <template v-for="(character,index) in characters" :key="character">
-        <!-- Check if the element if it last element and fill up the entire space -->
-        <character :select="selectCharacter" :index="index" :cname="character" :additional="`${(index+1)%2!=0&&(index+1)/(characters.length)==1?'full':'half'}`"></character>
+    <template v-if="userChoice">
+        <div class="playing-title">
+                <h3>You Picked</h3>
+                <h3>The house picked</h3>
+        </div>
+        <section id="field">
+                <character :cname="userChoice" additional="half"></character>
+                <game-result :result="gameResult" v-if="!playing&&gameResult" :resetGame="resetGame"></game-result>
+                <character :cname="computerChoice" additional="half" v-if="computerChoice"></character>
+                <null-character  v-else></null-character>
+            
+        </section>
     </template>
-</section>
-
+    <section v-else id="field" :class="`${this.characters.length==3?'bg-triangle': this.characters.length==5?'bg-pentagon': 'monomode'}`">
+        <template v-for="(character,index) in characters" :key="character">
+            <!-- Check if the element if it last element and fill up the entire space -->
+            <character :select="selectCharacter" :index="index" :cname="character" :additional="`${(index+1)%2!=0&&(index+1)/(characters.length)==1?'full':'half'}`"></character>
+        </template>
+    </section>
 </template>
 <script>
 import character from './character.vue'
 import nullCharacter from './null-character.vue'
+import gameResult from './game-result.vue'
+import {play} from '../../gameBrain'
 export default {
     data(){
         return{
             playing: false,
             userChoice: "",
-            computerChoice: ""
+            computerChoice: "",
+            gameResult:"",
 
         }
     },
@@ -39,14 +41,21 @@ export default {
         }, 
     },computed:{
         }, components:{
-        character, nullCharacter
+        character, nullCharacter, gameResult
     }, methods:{
+        resetGame(){
+            this.playing=false;
+            this.userChoice="";
+            this.computerChoice="";
+            this.gameResult="";
+        },
         selectCharacter(key){
-            alert('Hello you clicked me')
             this.userChoice=this.characters[key];
             this.playing= true,
             setTimeout(()=>{ 
                 this.computerChoice=this.characters[Math.round(Math.random()*2)]
+                this.gameResult= play(this.userChoice, this.computerChoice)
+                this.playing=false
             },1000)
         }
     }
